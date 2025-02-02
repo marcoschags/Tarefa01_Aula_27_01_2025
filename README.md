@@ -1,3 +1,5 @@
+# Link do vídeo: https://youtu.be/ccmrpU8vanw 
+
 # Aberto: segunda-feira, 27 jan. 2025, 08:00
 # Vencimento: domingo, 2 fev. 2025, 23:59
 
