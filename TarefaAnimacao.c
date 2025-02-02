@@ -20,6 +20,10 @@ volatile int contador = 0;
 PIO pio;
 uint sm;
 
+// Variáveis para implementar o debouncing
+uint32_t last_interrupt_time = 0;  // Armazena o tempo da última interrupção
+#define DEBOUNCE_DELAY 200  // Tempo de debounce em milissegundos
+
 // Converte valores de cores RGB para o formato de 32 bits esperado pela matriz de LEDs
 uint32_t matrix_rgb(double r, double g, double b) {
     unsigned char R = r * 255;
@@ -87,11 +91,15 @@ void mostrar_numero(int num, PIO pio, uint sm) {
     }
 }
 
-// Função de interrupção para os botões
+// Função de interrupção para os botões com debouncing
 void gpio_callback(uint gpio, uint32_t events) {
-    if (gpio == BOTAO_A && contador < 9) contador++;
-    if (gpio == BOTAO_B && contador > 0) contador--;
-    mostrar_numero(contador, pio, sm);
+    uint32_t current_time = to_ms_since_boot(get_absolute_time()); // Tempo atual em ms
+    if (current_time - last_interrupt_time > DEBOUNCE_DELAY) {  // Verifica se o intervalo é maior que o debounce
+        if (gpio == BOTAO_A && contador < 9) contador++;
+        if (gpio == BOTAO_B && contador > 0) contador--;
+        mostrar_numero(contador, pio, sm);
+        last_interrupt_time = current_time;  // Atualiza o tempo da última interrupção
+    }
 }
 
 int main() {
